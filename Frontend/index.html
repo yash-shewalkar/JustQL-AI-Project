@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>SQL Writer</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0e1117;
+      color: #fafafa;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin: 15px 0 8px;
+      color: #e0e0e0;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: #262730;
+      color: #fafafa;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+      box-sizing: border-box;
+      overflow: hidden; /* Recommended to prevent scrollbar desync */
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4a90e2;
+    }
+
+    /* ---------- GHOST SYSTEM ---------- */
+    .ghost-wrapper {
+      position: relative;
+    }
+
+    .ghost-textarea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    color: #555; /* Better visibility than 0.3 opacity */
+    pointer-events: none;
+    background: #262730; /* Give the background to the ghost layer */
+    border-color: #444;
+    }
+
+    .real-textarea {
+    position: relative;
+    z-index: 2;
+    background: transparent !important; /* Must be transparent to see ghost */
+    color: #fafafa;
+    caret-color: #4a90e2;
+    border-color: transparent; /* Overlay border to avoid doubling thickness */
+    }
+    /* ---------------------------------- */
+
+    pre {
+      background: #262730;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      overflow-x: auto;
+      font-family: monospace;
+    }
+
+    .info {
+      color: #888;
+      padding: 20px;
+      text-align: center;
+      background: #1e1e24;
+      border-radius: 6px;
+      border: 1px dashed #444;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="Sql_writer.js"></script>
+</body>
+</html>
