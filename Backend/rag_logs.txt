@@ -1,0 +1,2176 @@
+
+============================================================
+🕒 TIMESTAMP: 2026-03-21 23:56:39
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: get me Top 10 products per category
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+SELECT array_sort(ARRAY[ARRAY[2, 3, 1], ARRAY[4, 2, 1, 4], ARRAY[1, 2]],
+-- sort by array length
+(x, y) -> IF(cardinality(x) < cardinality(y), -1,
+IF(cardinality(x) = cardinality(y), 0, 1)));
+-- [[1, 2], [2, 3, 1], [4, 2, 1, 4]]
+arrays_overlap(x, y) → boolean#
+Tests if arrays x and y have any non-null elements in common.
+Returns null if there are no non-null elements in common but either array contains null.
+cardinality(x) → bigint#
+Returns the cardinality (size) of the array x.
+concat(array1, array2, ..., arrayN) → array
+Concatenates the arrays array1, array2, ..., arrayN.
+This function provides the same functionality as the SQL-standard concatenation operator (||).
+combinations(array(T), n) -> array(array(T))#
+Returns n-element sub-groups of input array. If the input array has no duplicates,
+combinations returns n-element subsets.
+SELECT combinations(ARRAY['foo', 'bar', 'baz'], 2);
+-- [['foo', 'bar'], ['foo', 'baz'], ['bar', 'baz']]
+SELECT combinations(ARRAY[1, 2, 3], 2);
+
+---
+
+DESCRIBE OUTPUT my_select2;
+Column Name | Catalog | Schema | Table | Type | Type Size | Aliased
+-------------+---------+--------+-------+--------+-----------+---------
+my_count | | | | bigint | 8 | true
+_col1 | | | | bigint | 8 | false
+(2 rows)
+Prepare and describe a row count query:
+PREPARE my_create FROM
+CREATE TABLE foo AS SELECT * FROM nation;
+DESCRIBE OUTPUT my_create;
+Column Name | Catalog | Schema | Table | Type | Type Size | Aliased
+-------------+---------+--------+-------+--------+-----------+---------
+rows | | | | bigint | 8 | false
+(1 row)
+See also#
+PREPARE
+Previous DESCRIBE INPUT
+Next DROP CATALOG
+DROP CATALOG — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+DROP CATALOG
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-03-22 22:11:42
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: get me  users name with course = "CS" 
+📚 RETRIEVED CONTEXT:
+Decimal
+Geospatial
+HyperLogLog
+IP Address
+JSON
+Lambda
+Logical
+Machine learning
+Map
+Math
+Quantile digest
+Regular expression
+Session
+Session
+Contents
+current_user
+current_groups()
+current_catalog
+current_schema
+Set Digest
+String
+System
+Table
+Teradata
+T-Digest
+URL
+UUID
+Window
+User-defined functions
+SQL language
+SQL statement syntax
+Developer guide
+Glossary
+Appendix
+Release notes
+Contents
+current_user
+current_groups()
+current_catalog
+current_schema
+Session information#
+Functions providing information about the query execution environment.
+current_user#
+Returns the current user running the query.
+current_groups()#
+Returns the list of groups for the current user running the query.
+current_catalog#
+Returns a character string that represents the current catalog name.
+current_schema#
+Returns a character string that represents the current unqualified schema name.
+Note
+This is part of the SQL standard and does not use parenthesis.
+Previous Regular expression functions
+Next Set Digest functions
+
+---
+
+-- {name=John, age=25}
+ai_fix_grammar(text) → varchar#
+Corrects grammatical errors in the input text.
+SELECT ai_fix_grammar('I are happy. What you doing?');
+-- I am happy. What are you doing?
+ai_gen(prompt) → varchar#
+Generates text based on the input prompt.
+SELECT ai_gen('Describe Trino in a few words');
+-- Distributed SQL query engine.
+ai_mask(text, labels) → varchar#
+Masks the values for the provided labels in the input text by replacing them
+with the text [MASKED].
+SELECT ai_mask(
+'Contact me at 555-1234 or visit us at 123 Main St.',
+ARRAY['phone', 'address']);
+-- Contact me at [MASKED] or visit us at [MASKED].
+ai_translate(text, language) → varchar#
+Translates the input text to the specified language.
+SELECT ai_translate('I like coffee', 'es');
+-- Me gusta el café
+SELECT ai_translate('I like coffee', 'zh-TW');
+-- 我喜歡咖啡
+Previous Aggregate functions
+Next Array functions and operators
+Aggregate functions — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+
+---
+
+SELECT#
+Synopsis#
+[ WITH SESSION [ name = expression [, ...] ]
+[ WITH [ FUNCTION udf ] [, ...] ]
+[ WITH [ RECURSIVE ] with_query [, ...] ]
+SELECT [ ALL | DISTINCT ] select_expression [, ...]
+[ FROM from_item [, ...] ]
+[ WHERE condition ]
+[ GROUP BY [ ALL | DISTINCT ] grouping_element [, ...] ]
+[ HAVING condition]
+[ WINDOW window_definition_list]
+[ { UNION | INTERSECT | EXCEPT } [ ALL | DISTINCT ] select ]
+[ ORDER BY expression [ ASC | DESC ] [, ...] ]
+[ OFFSET count [ ROW | ROWS ] ]
+[ LIMIT { count | ALL } ]
+[ FETCH { FIRST | NEXT } [ count ] { ROW | ROWS } { ONLY | WITH TIES } ]
+where from_item is one of
+table_name [ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+from_item join_type from_item
+[ ON join_condition | USING ( join_column [, ...] ) ]
+table_name [ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+MATCH_RECOGNIZE pattern_recognition_specification
+[ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+For detailed description of MATCH_RECOGNIZE clause, see pattern recognition in FROM clause.
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-03-23 23:02:42
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: get all departments names unique
+📚 RETRIEVED CONTEXT:
+SELECT#
+Synopsis#
+[ WITH SESSION [ name = expression [, ...] ]
+[ WITH [ FUNCTION udf ] [, ...] ]
+[ WITH [ RECURSIVE ] with_query [, ...] ]
+SELECT [ ALL | DISTINCT ] select_expression [, ...]
+[ FROM from_item [, ...] ]
+[ WHERE condition ]
+[ GROUP BY [ ALL | DISTINCT ] grouping_element [, ...] ]
+[ HAVING condition]
+[ WINDOW window_definition_list]
+[ { UNION | INTERSECT | EXCEPT } [ ALL | DISTINCT ] select ]
+[ ORDER BY expression [ ASC | DESC ] [, ...] ]
+[ OFFSET count [ ROW | ROWS ] ]
+[ LIMIT { count | ALL } ]
+[ FETCH { FIRST | NEXT } [ count ] { ROW | ROWS } { ONLY | WITH TIES } ]
+where from_item is one of
+table_name [ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+from_item join_type from_item
+[ ON join_condition | USING ( join_column [, ...] ) ]
+table_name [ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+MATCH_RECOGNIZE pattern_recognition_specification
+[ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+For detailed description of MATCH_RECOGNIZE clause, see pattern recognition in FROM clause.
+
+---
+
+(origin_state, destination_state)
+);
+origin_state | destination_state | origin_zip | _col3
+--------------+-------------------+------------+-------
+New York | New Jersey | 10002 | 3
+California | New Jersey | 94131 | 55
+New Jersey | Connecticut | 7081 | 225
+California | Connecticut | 90210 | 1337
+California | Colorado | 94131 | 5
+New York | New Jersey | NULL | 3
+New Jersey | Connecticut | NULL | 225
+California | Colorado | NULL | 5
+California | Connecticut | NULL | 1337
+California | New Jersey | NULL | 55
+(10 rows)
+The ALL and DISTINCT quantifiers determine whether duplicate grouping
+sets each produce distinct output rows. This is particularly useful when
+multiple complex grouping sets are combined in the same query. For example, the
+following query:
+SELECT origin_state, destination_state, origin_zip, sum(package_weight)
+FROM shipping
+GROUP BY ALL
+CUBE (origin_state, destination_state),
+ROLLUP (origin_state, origin_zip);
+is equivalent to:
+
+---
+
+Row pattern recognition in window structures .
+Each window component is optional. If a window specification does not specify
+window partitioning, ordering or frame, those components are obtained from
+the window specification referenced by the existing window name, or from
+another window specification in the reference chain. In case when there is no
+existing window name specified, or none of the referenced window
+specifications contains the component, the default value is used.
+Set operations#
+UNION INTERSECT and EXCEPT are all set operations. These clauses are used
+to combine the results of more than one select statement into a single result set:
+query UNION [ALL | DISTINCT] query
+query INTERSECT [ALL | DISTINCT] query
+query EXCEPT [ALL | DISTINCT] query
+The argument ALL or DISTINCT controls which rows are included in
+the final result set. If the argument ALL is specified all rows are
+included even if the rows are identical. If the argument DISTINCT
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-03-23 23:09:10
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: get all unique locations names we have
+
+📚 RETRIEVED CONTEXT:
+(origin_state, destination_state)
+);
+origin_state | destination_state | origin_zip | _col3
+--------------+-------------------+------------+-------
+New York | New Jersey | 10002 | 3
+California | New Jersey | 94131 | 55
+New Jersey | Connecticut | 7081 | 225
+California | Connecticut | 90210 | 1337
+California | Colorado | 94131 | 5
+New York | New Jersey | NULL | 3
+New Jersey | Connecticut | NULL | 225
+California | Colorado | NULL | 5
+California | Connecticut | NULL | 1337
+California | New Jersey | NULL | 55
+(10 rows)
+The ALL and DISTINCT quantifiers determine whether duplicate grouping
+sets each produce distinct output rows. This is particularly useful when
+multiple complex grouping sets are combined in the same query. For example, the
+following query:
+SELECT origin_state, destination_state, origin_zip, sum(package_weight)
+FROM shipping
+GROUP BY ALL
+CUBE (origin_state, destination_state),
+ROLLUP (origin_state, origin_zip);
+is equivalent to:
+
+---
+
+SELECT regexp_replace('new york', '(\w)(\w*)', x -> upper(x[1]) || lower(x[2])); --'New York'
+regexp_split(string, pattern)#
+Splits string using the regular expression pattern and returns an
+array. Trailing empty strings are preserved:
+SELECT regexp_split('1a 2b 14m', '\s*[a-z]+\s*'); -- [1, 2, 14, ]
+Previous Quantile digest functions
+Next Session information
+Session information — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+Session information
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+List of functions and operators
+List of functions by topic
+Aggregate
+AI
+Array
+Binary
+Bitwise
+Color
+Comparison
+Conditional
+Conversion
+Date and time
+Decimal
+Geospatial
+HyperLogLog
+IP Address
+JSON
+Lambda
+Logical
+Machine learning
+Map
+Math
+Quantile digest
+Regular expression
+Session
+Session
+Contents
+current_user
+current_groups()
+current_catalog
+
+---
+
+SELECT regexp_position('I have 23 apples, 5 pears and 13 oranges', '\b\d+\b', 12); -- 19
+regexp_position(string, pattern, start, occurrence) → integer
+Returns the index of the nth occurrence of pattern in string,
+starting from start (include start). Returns -1 if not found:
+SELECT regexp_position('I have 23 apples, 5 pears and 13 oranges', '\b\d+\b', 12, 1); -- 19
+SELECT regexp_position('I have 23 apples, 5 pears and 13 oranges', '\b\d+\b', 12, 2); -- 31
+SELECT regexp_position('I have 23 apples, 5 pears and 13 oranges', '\b\d+\b', 12, 3); -- -1
+regexp_replace(string, pattern) → varchar#
+Removes every instance of the substring matched by the regular expression
+pattern from string:
+SELECT regexp_replace('1a 2b 14m', '\d+[ab] '); -- '14m'
+regexp_replace(string, pattern, replacement) → varchar
+Replaces every instance of the substring matched by the regular expression
+pattern in string with replacement. Capturing groups can be
+referenced in replacement using $g for a numbered group or
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-03-23 23:10:03
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: get all unique users limit 15
+
+📚 RETRIEVED CONTEXT:
+any specific input set.
+approx_distinct(x, e) → bigint
+Returns the approximate number of distinct input values.
+This function provides an approximation of count(DISTINCT x).
+Zero is returned if all input values are null.
+This function should produce a standard error of no more than e, which
+is the standard deviation of the (approximately normal) error distribution
+over all possible sets. It does not guarantee an upper bound on the error
+for any specific input set. The current implementation of this function
+requires that e be in the range of [0.0040625, 0.26000].
+approx_most_frequent(buckets, value, capacity) → map<[same as value], bigint>#
+Computes the top frequent values up to buckets elements approximately.
+Approximate estimation of the function enables us to pick up the frequent
+values with less memory. Larger capacity improves the accuracy of
+underlying algorithm with sacrificing the memory capacity. The returned
+
+---
+
+weekly or monthly unique users to be calculated incrementally by combining the
+dailies. This is similar to computing weekly revenue by summing daily revenue.
+Uses of approx_distinct() with GROUPING SETS can be converted to use
+HyperLogLog. Examples:
+CREATE TABLE visit_summaries (
+visit_date date,
+hll varbinary
+);
+INSERT INTO visit_summaries
+SELECT visit_date, cast(approx_set(user_id) AS varbinary)
+FROM user_visits
+GROUP BY visit_date;
+SELECT cardinality(merge(cast(hll AS HyperLogLog))) AS weekly_unique_users
+FROM visit_summaries
+WHERE visit_date >= current_date - interval '7' day;
+Functions#
+approx_set(x) → HyperLogLog#
+Returns the HyperLogLog sketch of the input data set of x. This
+data sketch underlies approx_distinct() and can be stored and
+used later by calling cardinality().
+cardinality(hll) → bigint
+This will perform approx_distinct() on the data summarized by the
+hll HyperLogLog data sketch.
+empty_approx_set() → HyperLogLog#
+Returns an empty HyperLogLog.
+
+---
+
+------------------+-------------+----------------+---------------+---------------+-----------------------------------------
+cf_getgroups | varchar | | scalar | true | Returns the current session's groups
+cf_getprincipal | varchar | | scalar | true | Returns the current session's principal
+cf_getuser | varchar | | scalar | true | Returns the current session's user
+See also#
+Functions and operators
+User-defined functions
+Functions
+CREATE FUNCTION
+DROP FUNCTION
+SHOW CREATE FUNCTION
+Previous SHOW CREATE VIEW
+Next SHOW GRANTS
+SHOW GRANTS — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+SHOW GRANTS
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+ALTER VIEW
+ANALYZE
+CALL
+COMMENT
+COMMIT
+CREATE CATALOG
+CREATE FUNCTION
+CREATE MATERIALIZED VIEW
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-03-23 23:10:15
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: get all unique users names limit 15
+
+📚 RETRIEVED CONTEXT:
+any specific input set.
+approx_distinct(x, e) → bigint
+Returns the approximate number of distinct input values.
+This function provides an approximation of count(DISTINCT x).
+Zero is returned if all input values are null.
+This function should produce a standard error of no more than e, which
+is the standard deviation of the (approximately normal) error distribution
+over all possible sets. It does not guarantee an upper bound on the error
+for any specific input set. The current implementation of this function
+requires that e be in the range of [0.0040625, 0.26000].
+approx_most_frequent(buckets, value, capacity) → map<[same as value], bigint>#
+Computes the top frequent values up to buckets elements approximately.
+Approximate estimation of the function enables us to pick up the frequent
+values with less memory. Larger capacity improves the accuracy of
+underlying algorithm with sacrificing the memory capacity. The returned
+
+---
+
+SELECT#
+Synopsis#
+[ WITH SESSION [ name = expression [, ...] ]
+[ WITH [ FUNCTION udf ] [, ...] ]
+[ WITH [ RECURSIVE ] with_query [, ...] ]
+SELECT [ ALL | DISTINCT ] select_expression [, ...]
+[ FROM from_item [, ...] ]
+[ WHERE condition ]
+[ GROUP BY [ ALL | DISTINCT ] grouping_element [, ...] ]
+[ HAVING condition]
+[ WINDOW window_definition_list]
+[ { UNION | INTERSECT | EXCEPT } [ ALL | DISTINCT ] select ]
+[ ORDER BY expression [ ASC | DESC ] [, ...] ]
+[ OFFSET count [ ROW | ROWS ] ]
+[ LIMIT { count | ALL } ]
+[ FETCH { FIRST | NEXT } [ count ] { ROW | ROWS } { ONLY | WITH TIES } ]
+where from_item is one of
+table_name [ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+from_item join_type from_item
+[ ON join_condition | USING ( join_column [, ...] ) ]
+table_name [ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+MATCH_RECOGNIZE pattern_recognition_specification
+[ [ AS ] alias [ ( column_alias [, ...] ) ] ]
+For detailed description of MATCH_RECOGNIZE clause, see pattern recognition in FROM clause.
+
+---
+
+102
+‘{“comment” : “problematic”, “children” : [8, 11]}’
+103
+‘{“comment” : “knows best”, “children” : [2]}’
+The following query gets the children array for each customer:
+SELECT
+id,
+json_query(
+description,
+'lax $.children'
+) AS children
+FROM customers
+id
+children
+101
+‘[10,13,16]’
+102
+‘[8,11]’
+103
+‘[2]’
+The following query gets the collection of children for each customer.
+Note that the json_query function can only output a single JSON item. If
+you don’t use array wrapper, you get an error for every customer with multiple
+children. The error is handled according to the ON ERROR clause.
+SELECT
+id,
+json_query(
+description,
+'lax $.children[*]'
+WITHOUT ARRAY WRAPPER
+NULL ON ERROR
+) AS children
+FROM customers
+id
+children
+101
+NULL
+102
+NULL
+103
+‘2’
+The following query gets the last child for each customer, wrapped in a JSON
+array:
+SELECT
+id,
+json_query(
+description,
+'lax $.children[last]'
+WITH ARRAY WRAPPER
+) AS last_child
+FROM customers
+id
+last_child
+101
+‘[16]’
+102
+‘[11]’
+103
+‘[2]’
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-03-23 23:12:35
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: get all unique factory workers
+📚 RETRIEVED CONTEXT:
+explicitly shows the data exchange between workers:
+EXPLAIN (TYPE DISTRIBUTED) SELECT regionkey, count(*) FROM nation GROUP BY 1;
+Query Plan
+------------------------------------------------------------------------------------------------------
+Trino version: version
+Fragment 0 [SINGLE]
+Output layout: [regionkey, count]
+Output partitioning: SINGLE []
+Output[regionkey, _col1]
+│ Layout: [regionkey:bigint, count:bigint]
+│ Estimates: {rows: ? (?), cpu: ?, memory: ?, network: ?}
+│ _col1 := count
+└─ RemoteSource[1]
+Layout: [regionkey:bigint, count:bigint]
+Fragment 1 [HASH]
+Output layout: [regionkey, count]
+Output partitioning: SINGLE []
+Aggregate(FINAL)[regionkey]
+│ Layout: [regionkey:bigint, count:bigint]
+│ Estimates: {rows: ? (?), cpu: ?, memory: ?, network: ?}
+│ count := count("count_8")
+└─ LocalExchange[HASH][$hashvalue] ("regionkey")
+│ Layout: [regionkey:bigint, count_8:bigint, $hashvalue:bigint]
+│ Estimates: {rows: ? (?), cpu: ?, memory: ?, network: ?}
+└─ RemoteSource[2]
+
+---
+
+} ],
+"children" : [ {
+"id" : "194",
+"name" : "LocalExchange",
+"descriptor" : {
+"partitioning" : "SINGLE",
+"isReplicateNullsAndAny" : "",
+"hashColumn" : "[]",
+"arguments" : "[]"
+},
+"outputs" : [ {
+"symbol" : "regionkey",
+"type" : "bigint"
+}, {
+"symbol" : "count_0",
+"type" : "bigint"
+} ],
+"details" : [ ],
+"estimates" : [ {
+"outputRowCount" : "NaN",
+"outputSizeInBytes" : "NaN",
+"cpuCost" : "NaN",
+"memoryCost" : "NaN",
+"networkCost" : "NaN"
+} ],
+"children" : [ {
+"id" : "227",
+"name" : "Project",
+"descriptor" : { },
+"outputs" : [ {
+"symbol" : "regionkey",
+"type" : "bigint"
+}, {
+"symbol" : "count_0",
+"type" : "bigint"
+} ],
+"details" : [ ],
+"estimates" : [ {
+"outputRowCount" : "NaN",
+"outputSizeInBytes" : "NaN",
+"cpuCost" : "NaN",
+"memoryCost" : "NaN",
+"networkCost" : "NaN"
+} ],
+"children" : [ {
+"id" : "200",
+"name" : "RemoteSource",
+"descriptor" : {
+"sourceFragmentIds" : "[2]"
+},
+"outputs" : [ {
+"symbol" : "regionkey",
+"type" : "bigint"
+}, {
+"symbol" : "count_0",
+"type" : "bigint"
+}, {
+
+---
+
+{
+"id": "198",
+"name": "Aggregate",
+"descriptor": {
+"type": "PARTIAL",
+"keys": "[regionkey]",
+"hash": ""
+},
+"outputs": [
+{
+"symbol": "regionkey",
+"type": "bigint"
+},
+{
+"symbol": "count_0",
+"type": "bigint"
+}
+],
+"details": [
+"count_0 := count(*)"
+],
+"estimates":[],
+"children": [
+{
+"id": "0",
+"name": "TableScan",
+"descriptor": {
+"table": "hive:tpch_sf1_orc_part:nation"
+},
+"outputs": [
+{
+"symbol": "regionkey",
+"type": "bigint"
+}
+],
+"details": [
+"regionkey := regionkey:bigint:REGULAR"
+],
+"estimates": [
+{
+"outputRowCount": 25,
+"outputSizeInBytes": 225,
+"cpuCost": 225,
+"memoryCost": 0,
+"networkCost": 0
+}
+],
+"children": []
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+}
+EXPLAIN (TYPE DISTRIBUTED)#
+Process the supplied query statement and create a distributed plan in text
+format. The distributed plan splits the logical plan into stages, and therefore
+explicitly shows the data exchange between workers:
+EXPLAIN (TYPE DISTRIBUTED) SELECT regionkey, count(*) FROM nation GROUP BY 1;
+Query Plan
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-04 18:10:26
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: give all orders limit to 10
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+Delete all orders:
+DELETE FROM orders;
+Limitations#
+Some connectors have limited or no support for DELETE.
+See connector documentation for more details.
+Previous DEALLOCATE PREPARE
+Next DENY
+DENY — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+DENY
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+ALTER VIEW
+ANALYZE
+CALL
+COMMENT
+COMMIT
+CREATE CATALOG
+CREATE FUNCTION
+CREATE MATERIALIZED VIEW
+CREATE ROLE
+CREATE SCHEMA
+CREATE TABLE
+CREATE TABLE AS
+CREATE VIEW
+DEALLOCATE PREPARE
+DELETE
+DENY
+DENY
+Contents
+Synopsis
+Description
+Examples
+Limitations
+See also
+DESCRIBE
+DESCRIBE INPUT
+DESCRIBE OUTPUT
+DROP CATALOG
+DROP FUNCTION
+DROP MATERIALIZED VIEW
+DROP ROLE
+DROP SCHEMA
+DROP TABLE
+DROP VIEW
+EXECUTE
+EXECUTE IMMEDIATE
+EXPLAIN
+EXPLAIN ANALYZE
+
+---
+
+leading rows are discarded:
+SELECT name FROM nation ORDER BY name OFFSET 22;
+name
+----------------
+UNITED KINGDOM
+UNITED STATES
+VIETNAM
+(3 rows)
+Otherwise, it is arbitrary which rows are discarded.
+If the count specified in the OFFSET clause equals or exceeds the size
+of the result set, the final result is empty.
+LIMIT or FETCH FIRST clause#
+The LIMIT or FETCH FIRST clause restricts the number of rows
+in the result set.
+LIMIT { count | ALL }
+FETCH { FIRST | NEXT } [ count ] { ROW | ROWS } { ONLY | WITH TIES }
+The following example queries a large table, but the LIMIT clause
+restricts the output to only have five rows (because the query lacks an ORDER BY,
+exactly which rows are returned is arbitrary):
+SELECT orderdate FROM orders LIMIT 5;
+orderdate
+------------
+1994-07-25
+1993-11-12
+1992-10-06
+1994-01-04
+1997-12-28
+(5 rows)
+LIMIT ALL is the same as omitting the LIMIT clause.
+The FETCH FIRST clause supports either the FIRST or NEXT keywords
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-04 23:42:27
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: give me all orders limit 10
+
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+Delete all orders:
+DELETE FROM orders;
+Limitations#
+Some connectors have limited or no support for DELETE.
+See connector documentation for more details.
+Previous DEALLOCATE PREPARE
+Next DENY
+DENY — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+DENY
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+ALTER VIEW
+ANALYZE
+CALL
+COMMENT
+COMMIT
+CREATE CATALOG
+CREATE FUNCTION
+CREATE MATERIALIZED VIEW
+CREATE ROLE
+CREATE SCHEMA
+CREATE TABLE
+CREATE TABLE AS
+CREATE VIEW
+DEALLOCATE PREPARE
+DELETE
+DENY
+DENY
+Contents
+Synopsis
+Description
+Examples
+Limitations
+See also
+DESCRIBE
+DESCRIBE INPUT
+DESCRIBE OUTPUT
+DROP CATALOG
+DROP FUNCTION
+DROP MATERIALIZED VIEW
+DROP ROLE
+DROP SCHEMA
+DROP TABLE
+DROP VIEW
+EXECUTE
+EXECUTE IMMEDIATE
+EXPLAIN
+EXPLAIN ANALYZE
+
+---
+
+leading rows are discarded:
+SELECT name FROM nation ORDER BY name OFFSET 22;
+name
+----------------
+UNITED KINGDOM
+UNITED STATES
+VIETNAM
+(3 rows)
+Otherwise, it is arbitrary which rows are discarded.
+If the count specified in the OFFSET clause equals or exceeds the size
+of the result set, the final result is empty.
+LIMIT or FETCH FIRST clause#
+The LIMIT or FETCH FIRST clause restricts the number of rows
+in the result set.
+LIMIT { count | ALL }
+FETCH { FIRST | NEXT } [ count ] { ROW | ROWS } { ONLY | WITH TIES }
+The following example queries a large table, but the LIMIT clause
+restricts the output to only have five rows (because the query lacks an ORDER BY,
+exactly which rows are returned is arbitrary):
+SELECT orderdate FROM orders LIMIT 5;
+orderdate
+------------
+1994-07-25
+1993-11-12
+1992-10-06
+1994-01-04
+1997-12-28
+(5 rows)
+LIMIT ALL is the same as omitting the LIMIT clause.
+The FETCH FIRST clause supports either the FIRST or NEXT keywords
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-04 23:44:01
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: Show all products with price greater than 1000.
+📚 RETRIEVED CONTEXT:
+SELECT species,
+count(*) FILTER (where petal_length_cm > 4) AS count
+FROM iris
+GROUP BY species;
+species | count
+-----------+-------
+virginica | 50
+setosa | 0
+versicolor | 34
+General aggregate functions#
+any_value(x) → [same as input]#
+Returns an arbitrary non-null value x, if one exists. x can be any
+valid expression. This allows you to return values from columns that are not
+directly part of the aggregation, inluding expressions using these columns,
+in a query.
+For example, the following query returns the customer name from the name
+column, and returns the sum of all total prices as customer spend. The
+aggregation however uses the rows grouped by the customer identifier
+custkey a required, since only that column is guaranteed to be unique:
+SELECT sum(o.totalprice) as spend,
+any_value(c.name)
+FROM tpch.tiny.orders o
+JOIN tpch.tiny.customer c
+ON o.custkey = c.custkey
+GROUP BY c.custkey;
+ORDER BY spend;
+arbitrary(x) → [same as input]#
+
+---
+
+SELECT count(*), mktsegment, nationkey,
+CAST(sum(acctbal) AS bigint) AS totalbal
+FROM customer
+GROUP BY mktsegment, nationkey
+HAVING sum(acctbal) > 5700000
+ORDER BY totalbal DESC;
+_col0 | mktsegment | nationkey | totalbal
+-------+------------+-----------+----------
+1272 | AUTOMOBILE | 19 | 5856939
+1253 | FURNITURE | 14 | 5794887
+1248 | FURNITURE | 9 | 5784628
+1243 | FURNITURE | 12 | 5757371
+1231 | HOUSEHOLD | 3 | 5753216
+1251 | MACHINERY | 2 | 5719140
+1247 | FURNITURE | 8 | 5701952
+(7 rows)
+WINDOW clause#
+The WINDOW clause is used to define named window specifications. The defined named
+window specifications can be referred to in the SELECT and ORDER BY clauses
+of the enclosing query:
+SELECT orderkey, clerk, totalprice,
+rank() OVER w AS rnk
+FROM orders
+WINDOW w AS (PARTITION BY clerk ORDER BY totalprice DESC)
+ORDER BY count() OVER w, clerk, rnk
+The window definition list of WINDOW clause can contain one or multiple named window
+specifications of the form
+
+---
+
+behavioral patterns
+in shipping applications, tracking packages through all possible valid paths,
+in financial applications, detecting unusual incidents, which might signal
+fraud
+Example#
+In the following example, the pattern describes a V-shape over the
+totalprice column. A match is found whenever orders made by a customer
+first decrease in price, and then increase past the starting point:
+SELECT * FROM orders MATCH_RECOGNIZE(
+PARTITION BY custkey
+ORDER BY orderdate
+MEASURES
+A.totalprice AS starting_price,
+LAST(B.totalprice) AS bottom_price,
+LAST(U.totalprice) AS top_price
+ONE ROW PER MATCH
+AFTER MATCH SKIP PAST LAST ROW
+PATTERN (A B+ C+ D+)
+SUBSET U = (C, D)
+DEFINE
+B AS totalprice < PREV(totalprice),
+C AS totalprice > PREV(totalprice) AND totalprice <= A.totalprice,
+D AS totalprice > PREV(totalprice)
+)
+In the following sections, all subclauses of the MATCH_RECOGNIZE clause are
+explained with this example query.
+Partitioning and ordering#
+PARTITION BY custkey
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-04 23:44:21
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: List all users who registered in the last 30 days.”
+📚 RETRIEVED CONTEXT:
+------------------+-------------+----------------+---------------+---------------+-----------------------------------------
+cf_getgroups | varchar | | scalar | true | Returns the current session's groups
+cf_getprincipal | varchar | | scalar | true | Returns the current session's principal
+cf_getuser | varchar | | scalar | true | Returns the current session's user
+See also#
+Functions and operators
+User-defined functions
+Functions
+CREATE FUNCTION
+DROP FUNCTION
+SHOW CREATE FUNCTION
+Previous SHOW CREATE VIEW
+Next SHOW GRANTS
+SHOW GRANTS — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+SHOW GRANTS
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+ALTER VIEW
+ANALYZE
+CALL
+COMMENT
+COMMIT
+CREATE CATALOG
+CREATE FUNCTION
+CREATE MATERIALIZED VIEW
+
+---
+
+weekly or monthly unique users to be calculated incrementally by combining the
+dailies. This is similar to computing weekly revenue by summing daily revenue.
+Uses of approx_distinct() with GROUPING SETS can be converted to use
+HyperLogLog. Examples:
+CREATE TABLE visit_summaries (
+visit_date date,
+hll varbinary
+);
+INSERT INTO visit_summaries
+SELECT visit_date, cast(approx_set(user_id) AS varbinary)
+FROM user_visits
+GROUP BY visit_date;
+SELECT cardinality(merge(cast(hll AS HyperLogLog))) AS weekly_unique_users
+FROM visit_summaries
+WHERE visit_date >= current_date - interval '7' day;
+Functions#
+approx_set(x) → HyperLogLog#
+Returns the HyperLogLog sketch of the input data set of x. This
+data sketch underlies approx_distinct() and can be stored and
+used later by calling cardinality().
+cardinality(hll) → bigint
+This will perform approx_distinct() on the data summarized by the
+hll HyperLogLog data sketch.
+empty_approx_set() → HyperLogLog#
+Returns an empty HyperLogLog.
+
+---
+
+UPDATE
+purchases
+SET
+status = 'OVERDUE'
+WHERE
+ship_date IS NULL;
+Update the account manager and account assign date for all customers:
+UPDATE
+customers
+SET
+account_manager = 'John Henry',
+assign_date = now();
+Update the manager to be the name of the employee who matches the manager ID:
+UPDATE
+new_hires
+SET
+manager = (
+SELECT
+e.name
+FROM
+employees e
+WHERE
+e.employee_id = new_hires.manager_id
+);
+Limitations#
+Some connectors have limited or no support for UPDATE.
+See connector documentation for more details.
+Previous TRUNCATE
+Next USE
+USE — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+USE
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+ALTER VIEW
+ANALYZE
+CALL
+COMMENT
+COMMIT
+CREATE CATALOG
+CREATE FUNCTION
+CREATE MATERIALIZED VIEW
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-05 21:30:57
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: give me top orders
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+orderkey bigint,
+orderstatus varchar,
+totalprice double,
+orderdate date
+)
+WITH (format = 'ORC')
+Create the table orders if it does not already exist, adding a table comment
+and a column comment:
+CREATE TABLE IF NOT EXISTS orders (
+orderkey bigint,
+orderstatus varchar,
+totalprice double COMMENT 'Price in cents.',
+orderdate date
+)
+COMMENT 'A table to keep track of orders.'
+Create the table bigger_orders using the columns from orders
+plus additional columns at the start and end:
+CREATE TABLE bigger_orders (
+another_orderkey bigint,
+LIKE orders,
+another_orderdate date
+)
+See also#
+ALTER TABLE, DROP TABLE, CREATE TABLE AS, SHOW CREATE TABLE
+Previous CREATE SCHEMA
+Next CREATE TABLE AS
+CREATE TABLE AS — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+CREATE TABLE AS
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+
+---
+
+CREATE TABLE orders_column_aliased (order_date, total_price)
+AS
+SELECT orderdate, totalprice
+FROM orders
+Create a new table orders_by_date that summarizes orders:
+CREATE TABLE orders_by_date
+COMMENT 'Summary of orders by date'
+WITH (format = 'ORC')
+AS
+SELECT orderdate, sum(totalprice) AS price
+FROM orders
+GROUP BY orderdate
+Create the table orders_by_date if it does not already exist:
+CREATE TABLE IF NOT EXISTS orders_by_date AS
+SELECT orderdate, sum(totalprice) AS price
+FROM orders
+GROUP BY orderdate
+Create a new empty_nation table with the same schema as nation and no data:
+CREATE TABLE empty_nation AS
+SELECT *
+FROM nation
+WITH NO DATA
+See also#
+CREATE TABLE, SELECT
+Previous CREATE TABLE
+Next CREATE VIEW
+CREATE VIEW — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+CREATE VIEW
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-05 21:31:12
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: give me top orders
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+orderkey bigint,
+orderstatus varchar,
+totalprice double,
+orderdate date
+)
+WITH (format = 'ORC')
+Create the table orders if it does not already exist, adding a table comment
+and a column comment:
+CREATE TABLE IF NOT EXISTS orders (
+orderkey bigint,
+orderstatus varchar,
+totalprice double COMMENT 'Price in cents.',
+orderdate date
+)
+COMMENT 'A table to keep track of orders.'
+Create the table bigger_orders using the columns from orders
+plus additional columns at the start and end:
+CREATE TABLE bigger_orders (
+another_orderkey bigint,
+LIKE orders,
+another_orderdate date
+)
+See also#
+ALTER TABLE, DROP TABLE, CREATE TABLE AS, SHOW CREATE TABLE
+Previous CREATE SCHEMA
+Next CREATE TABLE AS
+CREATE TABLE AS — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+CREATE TABLE AS
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+
+---
+
+CREATE TABLE orders_column_aliased (order_date, total_price)
+AS
+SELECT orderdate, totalprice
+FROM orders
+Create a new table orders_by_date that summarizes orders:
+CREATE TABLE orders_by_date
+COMMENT 'Summary of orders by date'
+WITH (format = 'ORC')
+AS
+SELECT orderdate, sum(totalprice) AS price
+FROM orders
+GROUP BY orderdate
+Create the table orders_by_date if it does not already exist:
+CREATE TABLE IF NOT EXISTS orders_by_date AS
+SELECT orderdate, sum(totalprice) AS price
+FROM orders
+GROUP BY orderdate
+Create a new empty_nation table with the same schema as nation and no data:
+CREATE TABLE empty_nation AS
+SELECT *
+FROM nation
+WITH NO DATA
+See also#
+CREATE TABLE, SELECT
+Previous CREATE TABLE
+Next CREATE VIEW
+CREATE VIEW — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+CREATE VIEW
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-05 21:31:56
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: give me all orders limit 10
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+Delete all orders:
+DELETE FROM orders;
+Limitations#
+Some connectors have limited or no support for DELETE.
+See connector documentation for more details.
+Previous DEALLOCATE PREPARE
+Next DENY
+DENY — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+DENY
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+ALTER VIEW
+ANALYZE
+CALL
+COMMENT
+COMMIT
+CREATE CATALOG
+CREATE FUNCTION
+CREATE MATERIALIZED VIEW
+CREATE ROLE
+CREATE SCHEMA
+CREATE TABLE
+CREATE TABLE AS
+CREATE VIEW
+DEALLOCATE PREPARE
+DELETE
+DENY
+DENY
+Contents
+Synopsis
+Description
+Examples
+Limitations
+See also
+DESCRIBE
+DESCRIBE INPUT
+DESCRIBE OUTPUT
+DROP CATALOG
+DROP FUNCTION
+DROP MATERIALIZED VIEW
+DROP ROLE
+DROP SCHEMA
+DROP TABLE
+DROP VIEW
+EXECUTE
+EXECUTE IMMEDIATE
+EXPLAIN
+EXPLAIN ANALYZE
+
+---
+
+leading rows are discarded:
+SELECT name FROM nation ORDER BY name OFFSET 22;
+name
+----------------
+UNITED KINGDOM
+UNITED STATES
+VIETNAM
+(3 rows)
+Otherwise, it is arbitrary which rows are discarded.
+If the count specified in the OFFSET clause equals or exceeds the size
+of the result set, the final result is empty.
+LIMIT or FETCH FIRST clause#
+The LIMIT or FETCH FIRST clause restricts the number of rows
+in the result set.
+LIMIT { count | ALL }
+FETCH { FIRST | NEXT } [ count ] { ROW | ROWS } { ONLY | WITH TIES }
+The following example queries a large table, but the LIMIT clause
+restricts the output to only have five rows (because the query lacks an ORDER BY,
+exactly which rows are returned is arbitrary):
+SELECT orderdate FROM orders LIMIT 5;
+orderdate
+------------
+1994-07-25
+1993-11-12
+1992-10-06
+1994-01-04
+1997-12-28
+(5 rows)
+LIMIT ALL is the same as omitting the LIMIT clause.
+The FETCH FIRST clause supports either the FIRST or NEXT keywords
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-05 21:54:48
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: give me all orders limit to 10
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+Delete all orders:
+DELETE FROM orders;
+Limitations#
+Some connectors have limited or no support for DELETE.
+See connector documentation for more details.
+Previous DEALLOCATE PREPARE
+Next DENY
+DENY — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+DENY
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+SQL language
+SQL statement syntax
+ALTER MATERIALIZED VIEW
+ALTER SCHEMA
+ALTER TABLE
+ALTER VIEW
+ANALYZE
+CALL
+COMMENT
+COMMIT
+CREATE CATALOG
+CREATE FUNCTION
+CREATE MATERIALIZED VIEW
+CREATE ROLE
+CREATE SCHEMA
+CREATE TABLE
+CREATE TABLE AS
+CREATE VIEW
+DEALLOCATE PREPARE
+DELETE
+DENY
+DENY
+Contents
+Synopsis
+Description
+Examples
+Limitations
+See also
+DESCRIBE
+DESCRIBE INPUT
+DESCRIBE OUTPUT
+DROP CATALOG
+DROP FUNCTION
+DROP MATERIALIZED VIEW
+DROP ROLE
+DROP SCHEMA
+DROP TABLE
+DROP VIEW
+EXECUTE
+EXECUTE IMMEDIATE
+EXPLAIN
+EXPLAIN ANALYZE
+
+---
+
+leading rows are discarded:
+SELECT name FROM nation ORDER BY name OFFSET 22;
+name
+----------------
+UNITED KINGDOM
+UNITED STATES
+VIETNAM
+(3 rows)
+Otherwise, it is arbitrary which rows are discarded.
+If the count specified in the OFFSET clause equals or exceeds the size
+of the result set, the final result is empty.
+LIMIT or FETCH FIRST clause#
+The LIMIT or FETCH FIRST clause restricts the number of rows
+in the result set.
+LIMIT { count | ALL }
+FETCH { FIRST | NEXT } [ count ] { ROW | ROWS } { ONLY | WITH TIES }
+The following example queries a large table, but the LIMIT clause
+restricts the output to only have five rows (because the query lacks an ORDER BY,
+exactly which rows are returned is arbitrary):
+SELECT orderdate FROM orders LIMIT 5;
+orderdate
+------------
+1994-07-25
+1993-11-12
+1992-10-06
+1994-01-04
+1997-12-28
+(5 rows)
+LIMIT ALL is the same as omitting the LIMIT clause.
+The FETCH FIRST clause supports either the FIRST or NEXT keywords
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-05 21:55:18
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: give top orders
+
+📚 RETRIEVED CONTEXT:
+ORDER BY id
+LIMIT 5;
+You can get the explain plan by prepending the above query with EXPLAIN:
+EXPLAIN SELECT id, name
+FROM postgresql.public.company
+ORDER BY id
+LIMIT 5;
+Fragment 0 [SINGLE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+Output[id, name]
+│ Layout: [id:integer, name:varchar]
+│ Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: ?}
+└─ RemoteSource[1]
+Layout: [id:integer, name:varchar]
+Fragment 1 [SOURCE]
+Output layout: [id, name]
+Output partitioning: SINGLE []
+Stage Execution Strategy: UNGROUPED_EXECUTION
+TableScan[postgresql:public.company public.company sortOrder=[id:integer:int4 ASC NULLS LAST] limit=5, grouped = false]
+Layout: [id:integer, name:varchar]
+Estimates: {rows: ? (?), cpu: ?, memory: 0B, network: 0B}
+name := name:varchar:text
+id := id:integer:int4
+Second, an example of a Top-N query on the tpch connector which does not support
+Top-N pushdown functionality:
+SELECT custkey, name
+FROM tpch.sf1.customer
+
+---
+
+orderkey bigint,
+orderstatus varchar,
+totalprice double,
+orderdate date
+)
+WITH (format = 'ORC')
+Create the table orders if it does not already exist, adding a table comment
+and a column comment:
+CREATE TABLE IF NOT EXISTS orders (
+orderkey bigint,
+orderstatus varchar,
+totalprice double COMMENT 'Price in cents.',
+orderdate date
+)
+COMMENT 'A table to keep track of orders.'
+Create the table bigger_orders using the columns from orders
+plus additional columns at the start and end:
+CREATE TABLE bigger_orders (
+another_orderkey bigint,
+LIKE orders,
+another_orderdate date
+)
+See also#
+ALTER TABLE, DROP TABLE, CREATE TABLE AS, SHOW CREATE TABLE
+Previous CREATE SCHEMA
+Next CREATE TABLE AS
+CREATE TABLE AS — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+CREATE TABLE AS
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+User-defined functions
+
+---
+
+CREATE TABLE orders_column_aliased (order_date, total_price)
+AS
+SELECT orderdate, totalprice
+FROM orders
+Create a new table orders_by_date that summarizes orders:
+CREATE TABLE orders_by_date
+COMMENT 'Summary of orders by date'
+WITH (format = 'ORC')
+AS
+SELECT orderdate, sum(totalprice) AS price
+FROM orders
+GROUP BY orderdate
+Create the table orders_by_date if it does not already exist:
+CREATE TABLE IF NOT EXISTS orders_by_date AS
+SELECT orderdate, sum(totalprice) AS price
+FROM orders
+GROUP BY orderdate
+Create a new empty_nation table with the same schema as nation and no data:
+CREATE TABLE empty_nation AS
+SELECT *
+FROM nation
+WITH NO DATA
+See also#
+CREATE TABLE, SELECT
+Previous CREATE TABLE
+Next CREATE VIEW
+CREATE VIEW — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+CREATE VIEW
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+============================================================
+
+============================================================
+🕒 TIMESTAMP: 2026-04-05 22:01:42
+⚙️ ENGINE: TRINO
+🗣️ USER QUERY: wet4grf
+📚 RETRIEVED CONTEXT:
+SELECT map_zip_with(MAP(ARRAY[1, 2, 3], ARRAY['a', 'b', 'c']),
+MAP(ARRAY[1, 2, 3], ARRAY['d', 'e', 'f']),
+(k, v1, v2) -> concat(v1, v2));
+-- {1 -> ad, 2 -> be, 3 -> cf}
+SELECT map_zip_with(MAP(ARRAY['k1', 'k2'], ARRAY[1, 2]),
+MAP(ARRAY['k2', 'k3'], ARRAY[4, 9]),
+(k, v1, v2) -> (v1, v2));
+-- {k1 -> ROW(1, null), k2 -> ROW(2, 4), k3 -> ROW(null, 9)}
+SELECT map_zip_with(MAP(ARRAY['a', 'b', 'c'], ARRAY[1, 8, 27]),
+MAP(ARRAY['a', 'b', 'c'], ARRAY[1, 2, 3]),
+(k, v1, v2) -> k || CAST(v1 / v2 AS VARCHAR));
+-- {a -> a1, b -> b4, c -> c9}
+transform_keys(map(K1, V), function(K1, V, K2)) -> map(K2, V)#
+Returns a map that applies function to each entry of map and transforms the keys:
+SELECT transform_keys(MAP(ARRAY[], ARRAY[]), (k, v) -> k + 1);
+-- {}
+SELECT transform_keys(MAP(ARRAY [1, 2, 3], ARRAY ['a', 'b', 'c']),
+(k, v) -> k + 1);
+-- {2 -> a, 3 -> b, 4 -> c}
+SELECT transform_keys(MAP(ARRAY ['a', 'b', 'c'], ARRAY [1, 2, 3]),
+(k, v) -> v * v);
+-- {1 -> 1, 4 -> 2, 9 -> 3}
+
+---
+
+HyperLogLog
+IP Address
+JSON
+Lambda
+Logical
+Machine learning
+Map
+Math
+Quantile digest
+Regular expression
+Session
+Set Digest
+String
+System
+Table
+Teradata
+T-Digest
+URL
+UUID
+UUID
+Contents
+uuid()
+Window
+User-defined functions
+SQL language
+SQL statement syntax
+Developer guide
+Glossary
+Appendix
+Release notes
+Contents
+uuid()
+UUID functions#
+uuid() → uuid#
+Returns a pseudo randomly generated UUID (type 4).
+Previous URL functions
+Next Window functions
+Window functions — Trino 474 Documentation
+Skip to content
+Trino 474 Documentation
+Window functions
+
+Type to start searching
+Trino
+Trino 474 Documentation
+Trino
+Overview
+Installation
+Clients
+Security
+Administration
+Query optimizer
+Connectors
+Object storage
+Functions and operators
+List of functions and operators
+List of functions by topic
+Aggregate
+AI
+Array
+Binary
+Bitwise
+Color
+Comparison
+Conditional
+Conversion
+Date and time
+Decimal
+Geospatial
+HyperLogLog
+IP Address
+JSON
+Lambda
+Logical
+Machine learning
+Map
+Math
+Quantile digest
+Regular expression
+
+---
+
+beta_cdf()
+inverse_beta_cdf()
+inverse_normal_cdf()
+normal_cdf()
+t_cdf()
+Quantile digest
+Regular expression
+Session
+Set Digest
+String
+System
+Table
+Teradata
+T-Digest
+URL
+UUID
+Window
+User-defined functions
+SQL language
+SQL statement syntax
+Developer guide
+Glossary
+Appendix
+Release notes
+Contents
+Mathematical operators
+Mathematical functions
+abs()
+cbrt()
+ceil()
+ceiling()
+degrees()
+e()
+exp()
+floor()
+ln()
+log()
+log2()
+log10()
+mod()
+pi()
+pow()
+power()
+radians()
+round()
+sign()
+sqrt()
+truncate()
+width_bucket()
+Random functions
+rand()
+random()
+Trigonometric functions
+acos()
+asin()
+atan()
+atan2()
+cos()
+cosh()
+sin()
+sinh()
+tan()
+tanh()
+Geometric functions
+cosine_distance()
+cosine_similarity()
+Floating point functions
+infinity()
+is_finite()
+is_infinite()
+is_nan()
+nan()
+Base conversion functions
+from_base()
+to_base()
+Statistical functions
+t_pdf()
+wilson_interval_lower()
+wilson_interval_upper()
+Cumulative distribution functions
+beta_cdf()
+inverse_beta_cdf()
+inverse_normal_cdf()
+normal_cdf()
+t_cdf()
+============================================================

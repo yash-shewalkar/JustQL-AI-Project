@@ -1,0 +1,13 @@
+flask
+flask_cors
+langchain_groq
+langchain_core
+langchain
+langchain_community
+pypdf2
+python-docx
+langchain-huggingface 
+sentence-transformers 
+faiss-cpu
+dotenv
+supabase
