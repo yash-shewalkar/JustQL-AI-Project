@@ -124,7 +124,18 @@ def log_rag_retrieval(engine, query, context):
 # 1️⃣ SQL Suggest API (Existing)
 # ---------------------------------------------------
 cached_schema = ""
-
+@app.route("/health", methods=["GET"])
+def health_check():
+    """
+    Basic health check route to verify the API is alive.
+    Returns 200 OK with a timestamp and status.
+    """
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.datetime.now().isoformat(),
+        "service": "JustQL-AI-API"
+    }), 200
+    
 @app.route("/suggest", methods=["POST"])
 def suggest():
     global cached_schema
