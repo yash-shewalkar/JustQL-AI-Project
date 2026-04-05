@@ -362,4 +362,9 @@ def delete_schema():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Pull the port from the environment variable 'PORT'
+    # Default to 5000 if not found (for local testing)
+    port = int(os.environ.get("PORT", 5000))
+    
+    # Use '0.0.0.0' to ensure it's accessible externally
+    app.run(host="0.0.0.0", port=port, debug=False)
