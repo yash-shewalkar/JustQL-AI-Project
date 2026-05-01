@@ -169,7 +169,7 @@ def suggest():
 
 
 # ---------------------------------------------------
-# 2️⃣ Schema Generator API (Agent)
+# 2️⃣ Schema Generator API
 # ---------------------------------------------------
 @app.route("/api/generate_schema", methods=["POST"])
 def generate_schema():
@@ -208,7 +208,7 @@ def generate_schema():
 
 
 # ---------------------------------------------------
-# 3️⃣ SQL Generator API (Agent) with RAG Integration
+# 3️⃣ SQL Generator API with RAG Integration
 # ---------------------------------------------------
 from flask import request, jsonify
 from config import supabase

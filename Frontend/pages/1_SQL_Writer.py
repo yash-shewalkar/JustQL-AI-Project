@@ -33,7 +33,7 @@ with st.sidebar:
 
 # ---------------- APP ----------------
 components.iframe(
-    "http://localhost:5500/index.html",
+    "https://just-ql-util-ui.vercel.app/",
     height=600,
     scrolling=True
 )

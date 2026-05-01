@@ -1,0 +1,24 @@
+# Git
+.git
+.gitignore
+
+# Environment variables (NEVER hardcode/copy .env into Docker image)
+.env
+
+# Python cache and environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Jupyter Notebooks
+*.ipynb
+.ipynb_checkpoints
+
+# Logs and local DBs
+*.log
+rag_logs.txt

@@ -1,0 +1,25 @@
+# Use an official Python image as the base
+FROM python:3.12-slim
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the requirements file
+COPY requirements.txt .
+# Create .streamlit directory
+RUN mkdir -p /app/.streamlit
+
+# Copy .streamlit configuration
+COPY .streamlit/secrets.toml /app/.streamlit/secrets.toml
+
+# Install the dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code
+COPY . .
+
+# Expose the port (replace with the actual port number)
+EXPOSE 8501
+
+# Run the command to start the development server (replace with the actual command)
+CMD ["streamlit", "run", "Home.py"]
