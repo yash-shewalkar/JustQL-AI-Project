@@ -26,7 +26,7 @@ CORS(app, resources={
     r"/api/*": {"origins": "*"}
 })
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 if not GROQ_API_KEY:
     raise RuntimeError("GROQ_API_KEY missing in .env")

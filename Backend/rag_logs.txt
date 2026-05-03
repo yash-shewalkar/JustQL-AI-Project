@@ -2174,3 +2174,34 @@ inverse_normal_cdf()
 normal_cdf()
 t_cdf()
 ============================================================
+
+============================================================
+🕒 2026-05-01 16:49:57 | ⚙️ TRINO
+🗣️ QUERY: "Show me the top 5 customers from New York who spent the most money in 2023, and include their total spend amount."
+📚 CONTEXT: (origin_state, destination_state)
+);
+origin_state | destination_state | origin_zip | _col3
+--------------+-------------------+------------+-------
+New York | New Jersey | 10002 | 3
+California | New Je...
+============================================================
+
+============================================================
+🕒 2026-05-01 16:56:45 | ⚙️ SPARK
+🗣️ QUERY: Give me a list of patient names who visited a doctor in April 2026 and had a billing amount greater than 500. Order them by the visit date.
+📚 CONTEXT: +------------------------------------------------------+
+|months_between(1997-02-28 10:30:00, 1996-10-30, false)|
++------------------------------------------------------+
+| 3.9495967741935485|
++------...
+============================================================
+
+============================================================
+🕒 2026-05-01 16:58:17 | ⚙️ SPARK
+🗣️ QUERY: Show all female patients born before the year 2000
+📚 CONTEXT: +------------------------------------------------------+
+|months_between(1997-02-28 10:30:00, 1996-10-30, false)|
++------------------------------------------------------+
+| 3.9495967741935485|
++------...
+============================================================

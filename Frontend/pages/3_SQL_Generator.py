@@ -14,10 +14,9 @@ UPLOAD_API = f"{FILE_API_BASE}/upload"
 DOWNLOAD_API = f"{FILE_API_BASE}/download"
 
 # ✅ NEW: History APIs (Supabase via Flask)
-SAVE_API = "http://localhost:5000/api/schema/save"
-HISTORY_API = "http://localhost:5000/api/schema/history"
-DELETE_API = "http://localhost:5000/api/schema/delete"
-
+SAVE_API = "http://localhost:5000/api/sql/save"
+HISTORY_API = "http://localhost:5000/api/sql/history"
+DELETE_API = "http://localhost:5000/api/sql/delete"
 # ---------------- AUTH ----------------
 logged_in = st.session_state.get("is_logged_in", False)
 
@@ -194,7 +193,7 @@ if current_chat:
 # ---------------- INPUT ----------------
 if st.session_state.sql_current_chat_id is None:
 
-    engine = st.selectbox("Select SQL Engine", ["Trino", "Spark", "PostgreSQL", "Snowflake"])
+    engine = st.selectbox("Select SQL Engine", ["Trino", "Spark"])
     input_type = st.radio("Provide schema via:", ["Text Input", "File Upload"], horizontal=True)
 
     schema_text = ""
